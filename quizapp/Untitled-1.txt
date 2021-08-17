@@ -1,0 +1,50 @@
+<script type="text/javascript">
+                const courseheaderdiv = document.querySelector('.courseheaderdiv');
+                document.addEventListener('DOMContentLoaded', getstudents);
+                
+                function storeinlocalstorage(student) {
+                    let students;
+                    if (localStorage.getItem('students') === null) {
+                        students = [];
+                    } else {
+                        students = JSON.parse(localStorage.getItem('students'));
+                    }
+                    students.push(student);
+                    localStorage.setItem('students', JSON.stringify(students));
+                }
+
+
+                function getstudents() {
+                    let students;
+                    if (localStorage.getItem('students') === null) {
+                        students = [];
+                    } else {
+                        students = JSON.parse(localStorage.getItem('students'));
+                    }
+                    students.forEach(student => {
+                        if (({{ $class->id }} === student.id) &&
+                        ({{ (Auth::user())? Auth::user()->id : '0'}} === student.user_id
+                    )
+                    )
+                        {
+                            courseheaderdiv.classList.add('active');
+                        }
+
+                    });
+                    }
+                    
+                var guest = {{ (Auth::guest())? 'true' : 'false' }};
+                if (guest) {
+                    enrollbtn.addEventListener('click', (e) => {
+                        window.location = '{{ route('login') }}'
+                        e.preventDefault();
+                    });
+                }else if(!guest){
+                        getstudents();
+                        let student = {'id': {{ $class->id }}, 'user_id': {{ (Auth::user())? Auth::user()->id : '0'}}};
+                        storeinlocalstorage(student);
+
+                        courseheaderdiv.classList.add('active');
+                        window.reload = getstudents;
+                }
+            </script>
